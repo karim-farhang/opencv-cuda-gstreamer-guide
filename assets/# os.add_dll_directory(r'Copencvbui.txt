@@ -1,0 +1,36 @@
+import os
+os.add_dll_directory(r'C:\opencv\build\install\x64\vc16\bin')
+os.add_dll_directory(r'C:\gstreamer\1.0\msvc_x86_64\bin')
+
+import cv2
+print(cv2.__version__)
+print("CUDA device count:", cv2.cuda.getCudaEnabledDeviceCount())
+
+
+
+pipeline = (
+    "filesrc location=test.mp4 ! "
+    "decodebin ! "
+    "videoconvert ! "
+    "appsink"
+)
+
+cap = cv2.VideoCapture(pipeline, cv2.CAP_GSTREAMER)
+
+if not cap.isOpened():
+    print("❌ Failed to open video")
+    exit()
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    cv2.imshow("GStreamer Video", frame)
+    if cv2.waitKey(1) & 0xFF == 27:
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+
+

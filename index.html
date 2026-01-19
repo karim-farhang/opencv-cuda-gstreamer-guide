@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Build OpenCV with CUDA and GStreamer Support for Windows 2026</title>
+
+
+    <style>
+        :root {
+            --primary: #003366;
+            --accent: #007acc;
+            --bg: #f8f9fa;
+            --surface: #ffffff;
+            --code-bg: #0f172a;
+            --code-text: #e5e7eb;
+        }
+
+        /* ---------- RESET ---------- */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* ---------- BASE ---------- */
+        body {
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            color: #1f2937;
+            margin: 0;
+            line-height: 1.65;
+        }
+
+        /* ---------- HEADER ---------- */
+        header {
+            background: linear-gradient(135deg, #003366, #001c3d);
+            color: #fff;
+            padding: 24px 16px;
+            border-bottom: 5px solid var(--accent);
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 2rem;
+        }
+
+        /* ---------- MAIN ---------- */
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 32px 24px;
+        }
+
+        /* ---------- SECTION / STEP ---------- */
+        .step {
+            width: 100%;
+            background: var(--surface);
+            border-left: 4px solid var(--accent);
+            padding: 28px;
+            margin-bottom: 36px;
+            border-radius: 14px;
+
+            /* Soft layered shadow */
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.04),
+                0 14px 34px rgba(0, 0, 0, 0.06);
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .step:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 6px 16px rgba(0, 0, 0, 0.06),
+                0 20px 46px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ---------- HEADINGS ---------- */
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        /* ---------- LINKS ---------- */
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* ---------- LISTS ---------- */
+        ul,
+        ol {
+            padding-left: 22px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        /* ---------- CODE BLOCK ---------- */
+        .code-block {
+            position: relative;
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 18px 0;
+            font-family: "JetBrains Mono", Consolas, monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+        }
+
+        /* ---------- COPY BUTTON ---------- */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #005fa3;
+        }
+
+        /* ---------- CHECKLIST ---------- */
+        .checklist li {
+            list-style: none;
+            margin: 8px 0;
+            position: relative;
+            padding-left: 22px;
+        }
+
+        .checklist li::before {
+            content: "✔";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* ---------- ENV TABLE ---------- */
+        .env-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+        }
+
+        .env-table th,
+        .env-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .env-table th {
+            background: #f1f5f9;
+            font-weight: 700;
+        }
+
+        /* ---------- NOTE ---------- */
+        .note {
+            background: #e7f3ff;
+            border-left: 4px solid var(--accent);
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin: 18px 0;
+            font-size: 0.95rem;
+        }
+
+        /* ---------- IMAGES ---------- */
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 16px 0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.6rem;
+            }
+
+            main {
+                padding: 20px 16px;
+            }
+
+            .step {
+                padding: 22px;
+            }
+        }
+
+        .step-link {
+            position: absolute;
+            top: 18px;
+            right: 28px;
+            background: var(--accent);
+            color: #fff !important;
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            z-index: 2;
+            transition: background 0.2s;
+        }
+
+        .step-link:hover {
+            background: #005fa3;
+            text-decoration: underline;
+        }
+
+        .step {
+            position: relative;
+        }
+    </style>
+
+</head>
+
+<body>
+    <header>
+        <h1>How to Build OpenCV with CUDA and GStreamer Support on Windows 2026</h1>
+        <p>A step-by-step guide to building OpenCV with CUDA and GStreamer support on Windows.</p>
+    </header>
+    <main>
+        <section class="step">
+            <h2>Prerequisites</h2>
+            <ol>
+                <li><a href="#step1">NVIDIA App</a></li>
+                <li><a href="#step1">NVIDIA GPU graphics driver</a></li>
+                <li><a href="#step2">Visual Studio 2019</a></li>
+                <li><a href="#step3">CMake 4.2.1 or later</a></li>
+                <li><a href="#step4">CUDA Toolkit 12.8</a></li>
+                <li><a href="#step5">cuDNN for CUDA 12.x (Windows ZIP)</a></li>
+                <li><a href="#step6">GStreamer MSVC 64-bit Runtime and Development Installer (1.26.10 or later)</a></li>
+                <li><a href="#step7">Python 3.10.6</a></li>
+                <li><a href="#step7">numpy==1.24.6</a></li>
+                <li><a href="#step8">Ultralytics</a></li>
+                <li><a href="#step8">PyTorch for Windows with CUDA 12.8</a></li>
+            </ol>
+        </section>
+
+        <section class="step" id="step1">
+            <h2>Step 1: Install NVIDIA App and GPU Driver</h2>
+            <a href="https://www.nvidia.com/en-eu/software/nvidia-app/" class="step-link" target="_blank">Download NVIDIA App</a>
+            <p>Download and install the NVIDIA App from the official website. Follow the instructions to install the
+                NVIDIA GPU graphics driver compatible with your system.</p>
+            <div style="display: flex; justify-content: center;">
+                <img src="assets/invida_app_home.png" height="400" alt="NVIDIA app home screenshot" style="display: block; margin: 0 auto;">
+            </div>
+        </section>
+
+        <section class="step" id="step2">
+            <h2>Step 2: Install Visual Studio 2019</h2>
+            <a href="https://www.techspot.com/downloads/7241-visual-studio-2019.html" class="step-link" target="_blank">Download Visual Studio 2019</a>
+            <p>Download and install Visual Studio 2019. During installation, select the <b>Desktop development with
+                    C++</b> workload.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/download_vs_2019_page.png" alt="VS 2019 download page" height="400" style="display: block; margin: 0 auto;">
+                <div style="height: 16px;"></div>
+                <img src="assets/install_with_desktop_development.png" alt="VS 2019 Desktop development workload" height="400" style="display: block; margin: 0 auto;">
+            </div>
+        </section>
+
+        <section class="step" id="step3">
+            <h2>Step 3: Install CMake 4.2.1 or Later</h2>
+            <a href="https://cmake.org/download/" class="step-link" target="_blank">Download CMake</a>
+            <p>Download and install the latest version of CMake.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/cmake_download.png" alt="CMake download" height="400" style="display: block; margin: 0 auto;">
+            </div>
+        </section>
+
+        <section class="step" id="step4">
+            <h2>Step 4: Install CUDA Toolkit 12.8</h2>
+            <a href="https://developer.nvidia.com/cuda-12-8-0-download-archive" class="step-link" target="_blank">Download CUDA Toolkit 12.8</a>
+            <p>Download and install the CUDA Toolkit 12.8 from NVIDIA.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/download_cuda.png" alt="CUDA download" height="400" style="display: block; margin: 0 auto;">
+            </div>
+            <p>In this example, I have used a screenshot of CUDA 11.8, but the process is the same.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/cuda installation.jpg" alt="" height="400" style="display: block; margin: 0 auto;">
+                <img src="assets/cuda installed.jpg" alt="" height="400" style="display: block; margin: 0 auto;">
+            </div>
+            <div class="note">
+                <b>Default install directory:</b> <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8</code>
+            </div>
+        </section>
+
+        <section class="step" id="step5">
+            <h2>Step 5: Install cuDNN for CUDA 12.x</h2>
+            <a href="https://developer.nvidia.com/rdp/cudnn-archive" class="step-link" target="_blank">Download cuDNN</a>
+            <p>Download cuDNN for CUDA 12.x, extract the ZIP, and copy the files to the appropriate CUDA directories
+                (<code>bin</code>, <code>include</code>, <code>lib/x64</code>).</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/download_cudnn.png" alt="cuDNN download" height="400" style="display: block; margin: 0 auto;">
+                <img src="assets/install_cudnn_to_cuda.png" alt="Install cuDNN" height="400" style="display: block; margin: 0 auto;">
+            </div>
+        </section>
+
+        <section class="step" id="step6">
+            <h2>Step 6: Install GStreamer (Runtime & Development)</h2>
+            <a href="https://gstreamer.freedesktop.org/download/" class="step-link" target="_blank">Download GStreamer</a>
+            <p>Download and install the GStreamer MSVC 64-bit Runtime and Development Installer.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/gstramer_download.png" alt="GStreamer download" height="400" style="display: block; margin: 0 auto;">
+            </div>
+            <p>Install GStreamer to <b>C:\gstreamer</b> and add the following environment variables:</p>
+            <ul>
+                <li><code>GST_PLUGIN_PATH=C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0</code></li>
+                <li><code>GST_PLUGIN_SCANNER=C:\gstreamer\1.0\msvc_x86_64\libexec\gstreamer-1.0\gst-plugin-scanner.exe</code></li>
+                <li><code>GSTREAMER_1_0_ROOT_MSVC_X86_64=C:\gstreamer\1.0\msvc_x86_64</code></li>
+                <li><code>GSTREAMER_ROOT=C:\gstreamer\1.0\msvc_x86_64</code></li>
+                <li><code>Path=C:\gstreamer\1.0\msvc_x86_64\bin</code></li>
+            </ul>
+        </section>
+
+        <section class="step" id="step7">
+            <h2>Step 7: Install Python 3.10.6 and Required Packages</h2>
+            <p>Download and install Python 3.10.6.</p>
+            <p>Uninstall any existing <code>numpy</code>, <code>opencv-python</code>, and
+                <code>opencv-contrib-python</code>:
+            </p>
+            <pre>pip uninstall opencv-python opencv-contrib-python numpy</pre>
+            <p>Install numpy 1.24.6:</p>
+            <pre>pip install numpy==1.24.6</pre>
+        </section>
+
+        <section class="step" id="step8">
+            <h2>Step 8: Install PyTorch and Ultralytics</h2>
+            <a href="https://pytorch.org/" class="step-link" target="_blank">PyTorch official website</a>
+            <p>Install PyTorch with CUDA 12.8 support:</p>
+            <pre>pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128</pre>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/pytorch web page.png" alt="PyTorch web page" height="400" style="display: block; margin: 0 auto;">
+            </div>
+            <p>Install Ultralytics (for YOLO models and other computer vision tasks):</p>
+            <pre>pip install ultralytics</pre>
+        </section>
+
+
+         <section class="step">
+            <h2>Check and Verify Versions</h2>
+            <ul>
+                <li>Python</li>
+                <img src="assets/python version.png" alt="Python version">
+                <li>numpy</li>
+                <img src="assets/numpy version.png" alt="numpy version">
+                <li>GStreamer</li>
+                <img src="assets/gstramer.png" alt="GStreamer version">
+                <li>CUDA</li>
+                <img src="assets/cuda version.png" alt="CUDA version">
+                <li>GPU</li>
+                <img src="assets/gpu version.png" height="600" alt="GPU version">
+            </ul>
+        </section>
+
+        
+
+        <section class="step" id="step9">
+            <h2>Step 9: Download OpenCV Source Code</h2>
+            <a href="https://opencv.org/releases/" class="step-link" target="_blank" style="top: 18px; right: 160px;">OpenCV Releases</a>
+            <a href="https://github.com/opencv/opencv_contrib/tree/4.12.0" class="step-link" target="_blank">OpenCV Contrib</a>
+            <p>Download the latest OpenCV and OpenCV contrib source code:</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/opencv download .png" alt="OpenCV download" height="400" style="display: block; margin: 0 auto;">
+                <br>
+                <img src="assets/opencv controib.png" alt="OpenCV contrib download" height="400" style="display: block; margin: 0 auto;">
+            </div>
+            <p>Extract both to <code>C:\opencv</code>:</p>
+            <ul>
+                <li><code>C:\opencv\opencv_4.14.0</code></li>
+                <li><code>C:\opencv\opencv_contrib_4.14.0</code></li>
+                <li>Create <code>C:\opencv\build</code> (empty directory for build output)</li>
+            </ul>
+            <div style="display: flex; justify-content: center;">
+                <img src="assets/opencv_dirs.png" alt="OpenCV directories" height="280" style="display: block; margin: 0 auto;">
+            </div>
+        </section>
+
+        <section class="step">
+            <h2>Step 10: Configure and Build OpenCV with CMake</h2>
+            <ol>
+                <li>Open CMake GUI.</li>
+                <li>Set <b>Where is the source code:</b> to <code>C:\opencv\opencv_4.14.0</code></li>
+                <li>Set <b>Where to build the binaries:</b> to <code>C:\opencv\build</code></li>
+                <li>Click <b>Configure</b>, select "Visual Studio 16 2019" and "x64", then click <b>Finish</b>.</li>
+            </ol>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/start config cmdak.png" alt="CMake configure" height="400" width="550" style="display: block; margin: 0 auto;">
+                <br>
+                <img src="assets/cmd start.png" alt="CMake start" height="400" style="display: block; margin: 0 auto;">
+            </div>
+            <p>After configuration, enable the following options:</p>
+            <ul style="list-style: none; padding-left: 0;">
+                <li>
+                    <b>WITH_CUDA</b>
+                    <div style="display: flex; justify-content: center; margin: 18px 0;">
+                        <img src="assets/WITH_CUDA.png" alt="WITH_CUDA" height="200" style="display: block;">
+                    </div>
+                </li>
+                <li>
+                    <b>OPENCV_DNN_CUDA</b>
+                    <div style="display: flex; justify-content: center; margin: 18px 0;">
+                        <img src="assets/OPENCV_DNN_CUDA.png" alt="OPENCV_DNN_CUDA" height="200" style="display: block;">
+                    </div>
+                </li>
+                <li>
+                    <b>OPENCV_EXTRA_MODULES_PATH</b> (set to <code>C:\opencv\opencv_contrib_4.14.0\modules</code>)
+                    <div style="display: flex; justify-content: center; margin: 18px 0;">
+                        <img src="assets/OPENCV_EXTRA_MODULES_PATH.png" alt="OPENCV_EXTRA_MODULES_PATH" height="200" style="display: block;">
+                    </div>
+                </li>
+                <p>
+                    <hr>
+                    Hit to <b>Configure</b> button after set each option to update the cmake options after that set the below
+                    <hr>
+                </p>
+                <li>
+                    <b>CUDA_FAST_MATH</b>
+                    <div style="display: flex; justify-content: center; margin: 18px 0;">
+                        <img src="assets/CUDA_FAST_MATH.png" alt="CUDA_FAST_MATH" height="200" style="display: block;">
+                    </div>
+                </li>
+                <li>
+                    <b>CUDA_ARCH_BIN</b>: Set to your GPU's compute capability into single code (e.g., <code>'8.9'</code>)
+                    <div style="display: flex; flex-direction: column; align-items: center; margin: 18px 0;">
+                        <img src="assets/arch_bin_number.png" alt="CUDA_ARCH_BIN" height="200" style="display: block; margin-bottom: 18px;">
+                        <img src="assets/CUDA_ARCH_BIN.png" alt="CUDA_ARCH_BIN" height="200" style="display: block;">
+                    </div>
+                </li>
+                <li>
+                    <b>CMAKE_BUILD_TYPE</b>: Set to <code>Release</code>
+                    <div style="display: flex; justify-content: center; margin: 18px 0;">
+                        <img src="assets/cmake_build_type.png" alt="CMAKE_BUILD_TYPE" height="200" style="display: block;">
+                    </div>
+                </li>
+                <li>
+                    <b>WITH_GSTREAMER</b>
+                    <div style="display: flex; justify-content: center; margin: 18px 0;">
+                        <img src="assets/with_gst.png" alt="WITH_GSTREAMER" height="400" style="display: block;">
+                    </div>
+                </li>
+            </ul>
+
+            <p>After checking all and configuring, then check the output.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/output.png" alt="" height="800" style="display: block; margin: 0 auto;">
+            </div>
+            <p>also check the numpy and python must present like this figure</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/numpy.png" alt="Python and numpy check" height="300" style="display: block; margin: 0 auto;">
+            </div>
+            <p>Click <b>Configure</b> again, then <b>Generate</b>, and finally <b>Open Project</b> to open in Visual
+                Studio 2019.</p>
+            <p>In Visual Studio, right-click <b>ALL_BUILD</b> and select <b>Build</b>.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/allbuild.png" alt="All build" height="500" style="display: block; margin: 0 auto;">
+            </div>
+            <p>After building, right-click <b>INSTALL</b> and select <b>Build</b> to install.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/install build.png" alt="Install build" height="500" style="display: block; margin: 0 auto;">
+            </div>
+        </section>
+
+        <section class="step">
+            <h2>Step 11: Verify the Installation</h2>
+            <p>first to open termain and test the opencv to know is installed or no but when build wiht gstramer
+                sameting get this errro about dll file</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/verfy installed cv2.png" alt="Verify OpenCV installation" height="400" style="display: block; margin: 0 auto;">
+            </div>
+            <p>Open a Python shell and run the following code to verify OpenCV with CUDA and GStreamer support:</p>
+            <pre>
+import os
+os.add_dll_directory(r'C:\opencv\build\install\x64\vc16\bin')
+os.add_dll_directory(r'C:\gstreamer\1.0\msvc_x86_64\bin')
+
+import cv2
+print("OpenCV:", cv2.__version__)
+print("CUDA devices:", cv2.cuda.getCudaEnabledDeviceCount())
+
+pipeline = (
+    "filesrc location=sample_test_video.mp4 ! "
+    "decodebin ! "
+    "videoconvert ! "
+    "appsink"
+)
+
+cap = cv2.VideoCapture(pipeline, cv2.CAP_GSTREAMER)
+if not cap.isOpened():
+    print("❌ Failed to open video")
+    exit()
+
+WIDTH, HEIGHT = 640, 360
+gpu_frame = cv2.cuda_GpuMat()
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    # Upload to GPU
+    gpu_frame.upload(frame)
+
+    # GPU resize
+    gpu_small = cv2.cuda.resize(gpu_frame, (WIDTH, HEIGHT))
+
+    # Download once
+    frame_small = gpu_small.download()
+
+    cv2.imshow("GStreamer + CUDA", frame_small)
+
+    if cv2.waitKey(1) & 0xFF == 27:
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+            </pre>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/gpu_cua_test.png" alt="GPU CUDA test" height="400" style="display: block; margin: 0 auto;">
+            </div>
+        </section>
+
+       
+    </main>
+    <footer style="background: linear-gradient(135deg, #003366, #001c3d); color: #fff; text-align: center; padding: 32px 16px 20px 16px; border-top: 5px solid #007acc; margin-top: 40px; font-size: 1.1rem;">
+        <div style="max-width: 700px; margin: 0 auto;">
+            <p style="font-size: 1.3rem; margin-bottom: 10px;">Thank you for following this guide! 🙏</p>
+            <p>If this was helpful, please share it with others who may benefit. <br>
+            Wishing you success with your OpenCV, CUDA, and GStreamer projects on Windows! 🚀</p>
+            <p style="margin-top: 18px; font-size: 1.05rem;">
+                <b>Karim Farhang</b> &mdash; Full Stack Software Engineer
+            </p>
+            <p style="margin-top: 8px; font-size: 0.95rem; color: #b6d7f7;">
+                &copy; 2026 | Made with ❤️ for the developer community.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
