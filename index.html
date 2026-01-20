@@ -545,6 +545,51 @@ cv2.destroyAllWindows()
             </div>
         </section>
 
+
+
+
+
+
+
+
+
+
+
+
+
+                <section class="step">
+            <h2>Step 12: Solve the DLL file problem</h2>
+            <p>Open __init__.py of cv2 from <b>site-packages</b> and add dll file path to it like this instruction:</p>
+            
+            <p><b>os.add_dll_directory(r'C:\opencv\build\install\x64\vc16\bin')</b></p>
+            <p><b>os.add_dll_directory(r'C:\gstreamer\1.0\msvc_x86_64\bin')</b></p>
+
+             <p>Go to this directoy on your system</p>
+             <p><b>C:\Users\Karim\AppData\Local\Programs\Python\Python310\Lib\site-packages\cv2</b></p>
+             <p>open __init__.py and add the following lines:</p>
+
+    
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/solve_problem.png" alt="Verify OpenCV installation" height="500" style="display: block; margin: 0 auto;">
+            </div>
+         
+            <br>
+            <p>Now everything should work correctly.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="assets/last done.png" alt="GPU CUDA test" height="320" style="display: block; margin: 0 auto;">
+            </div>
+        </section>
+
+
+
+
+
+
+
+
+
+
+
        
     </main>
     <footer style="background: linear-gradient(135deg, #003366, #001c3d); color: #fff; text-align: center; padding: 32px 16px 20px 16px; border-top: 5px solid #007acc; margin-top: 40px; font-size: 1.1rem;">
